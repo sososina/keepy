@@ -225,7 +225,7 @@ writePage("products", layout("상품구매하기 - 애플가이드랩", products
   image: defaultImage,
 }));
 
-const routes = ["", ...posts.map((post) => post.slug), ...pages.map(([slug]) => slug), "products"];
+const routes = ["", ...posts.map((post) => post.slug), ...Object.keys(categories).map((slug) => `category/${slug}`), ...pages.map(([slug]) => slug), "products"];
 fs.writeFileSync(path.join(publicDir, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map((route) => `  <url><loc>${siteUrl}/${route ? `${route}/` : ""}</loc></url>`).join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(publicDir, "feed.xml"), `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>애플가이드랩</title><link>${siteUrl}/</link><description>애플 제품 실전 가이드</description>${posts.slice(0, 20).map((post) => `<item><title>${esc(post.title)}</title><link>${siteUrl}${post.url}</link><description>${esc(post.intro)}</description></item>`).join("")}</channel></rss>`);
 fs.writeFileSync(path.join(publicDir, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
