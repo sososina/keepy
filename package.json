@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "build": "node build.mjs",
+    "preview": "npx wrangler pages dev public",
+    "deploy": "npx wrangler pages deploy public"
+  },
+  "devDependencies": {
+    "wrangler": "latest"
+  }
+}
