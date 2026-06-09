@@ -20,6 +20,16 @@ const categoryDescriptions = {
   troubleshooting: "iCloud, AirDrop, Apple ID, 문자 연동처럼 애플 기기에서 자주 꼬이는 문제를 안전한 순서로 해결합니다.",
   "news-analysis": "발표, 루머, 가격, 호환성 소식을 단순 뉴스가 아니라 구매와 사용 판단에 필요한 맥락으로 해석합니다.",
 };
+const categoryImages = {
+  iphone: "/assets/featured/agl-iphone.png",
+  mac: "/assets/featured/agl-mac.png",
+  ipad: "/assets/featured/agl-ipad.png",
+  "apple-watch": "/assets/featured/agl-watch.png",
+  troubleshooting: "/assets/featured/agl-troubleshooting.png",
+  "news-analysis": "/assets/featured/agl-news.png",
+};
+const defaultDescription = "아이폰, 맥, 아이패드, 애플워치를 더 오래 잘 쓰기 위한 실전 가이드";
+const defaultImage = "/assets/featured/agl-iphone.png";
 
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 const stripWpBlocks = (html) => html.replace(/<!--\s*\/?wp:[^>]*-->/g, "");
@@ -100,8 +110,18 @@ function article(post) {
     <h2>FAQ</h2><h3>문제가 계속되면 바로 초기화해야 하나요?</h3><p>초기화는 마지막 선택지입니다. 백업, 계정, 동기화, 네트워크, 앱 권한을 먼저 확인하고도 문제가 반복될 때 고려하는 편이 안전합니다.</p>`;
 }
 
-function layout(title, body, description = "아이폰, 맥, 아이패드, 애플워치를 더 오래 잘 쓰기 위한 실전 가이드") {
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(title)}</title><meta name="description" content="${esc(description)}"><link rel="stylesheet" href="/styles.css"><link rel="alternate" type="application/rss+xml" href="/feed.xml"></head><body><header class="agl-header"><div class="agl-wrap agl-header-inner"><a class="agl-brand" href="/"><div class="agl-brand-title">애플가이드랩</div><div class="agl-brand-subtitle">아이폰, 맥, 아이패드, 애플워치를 더 오래 잘 쓰기 위한 실전 가이드</div></a><nav class="agl-nav" aria-label="주 메뉴"><a href="/">홈</a><a href="/category/iphone/">아이폰</a><a href="/category/mac/">맥</a><a href="/category/ipad/">아이패드</a><a href="/category/apple-watch/">애플워치</a><a href="/category/troubleshooting/">문제해결</a><a href="/category/news-analysis/">뉴스해설</a><a href="/products/">상품구매하기</a><a href="/about/">소개</a><a href="/contact/">문의</a></nav></div></header>${body}<footer class="agl-footer"><div class="agl-wrap agl-footer-inner"><div>© 2026 애플가이드랩. Apple 제품 활용을 위한 독립 가이드 블로그입니다.</div><div class="agl-footer-links"><a href="/about/">소개</a><a href="/contact/">문의</a><a href="/privacy-policy/">개인정보처리방침</a></div></div></footer></body></html>`;
+function absoluteUrl(route = "") {
+  return `${siteUrl}/${route ? `${route.replace(/^\/|\/$/g, "")}/` : ""}`;
+}
+
+function layout(title, body, options = {}) {
+  const description = options.description || defaultDescription;
+  const route = options.route || "";
+  const canonical = absoluteUrl(route);
+  const image = `${siteUrl}${options.image || defaultImage}`;
+  const type = options.type || "website";
+  const jsonLd = options.jsonLd ? `<script type="application/ld+json">${JSON.stringify(options.jsonLd)}</script>` : "";
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(title)}</title><meta name="description" content="${esc(description)}"><meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"><link rel="canonical" href="${esc(canonical)}"><link rel="stylesheet" href="/styles.css"><link rel="alternate" type="application/rss+xml" href="/feed.xml"><meta property="og:locale" content="ko_KR"><meta property="og:site_name" content="애플가이드랩"><meta property="og:type" content="${esc(type)}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${esc(canonical)}"><meta property="og:image" content="${esc(image)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(description)}"><meta name="twitter:image" content="${esc(image)}">${jsonLd}</head><body><header class="agl-header"><div class="agl-wrap agl-header-inner"><a class="agl-brand" href="/"><div class="agl-brand-title">애플가이드랩</div><div class="agl-brand-subtitle">아이폰, 맥, 아이패드, 애플워치를 더 오래 잘 쓰기 위한 실전 가이드</div></a><nav class="agl-nav" aria-label="주 메뉴"><a href="/">홈</a><a href="/category/iphone/">아이폰</a><a href="/category/mac/">맥</a><a href="/category/ipad/">아이패드</a><a href="/category/apple-watch/">애플워치</a><a href="/category/troubleshooting/">문제해결</a><a href="/category/news-analysis/">뉴스해설</a><a href="/products/">상품구매하기</a><a href="/about/">소개</a><a href="/contact/">문의</a></nav></div></header>${body}<footer class="agl-footer"><div class="agl-wrap agl-footer-inner"><div>© 2026 애플가이드랩. Apple 제품 활용을 위한 독립 가이드 블로그입니다.</div><div class="agl-footer-links"><a href="/about/">소개</a><a href="/contact/">문의</a><a href="/privacy-policy/">개인정보처리방침</a></div></div></footer></body></html>`;
 }
 
 function writePage(route, html) {
@@ -111,7 +131,7 @@ function writePage(route, html) {
 }
 
 function postCard(post) {
-  return `<li class="agl-card"><h2 class="agl-card-title"><a href="${post.url}">${esc(post.title)}</a></h2><div class="agl-date">${post.date}</div><div class="agl-card-body"><a class="agl-thumb" href="${post.url}" data-label="${esc(post.categoryName)}"></a><div class="agl-card-copy"><p class="agl-excerpt">${esc(post.intro)}</p><a class="agl-readmore" href="${post.url}">내용 보기 →</a></div></div></li>`;
+  return `<li class="agl-card"><h2 class="agl-card-title"><a href="${post.url}">${esc(post.title)}</a></h2><div class="agl-date">${post.date}</div><div class="agl-card-body"><a class="agl-thumb" href="${post.url}" data-label="${esc(post.categoryName)}"><img src="${post.image}" alt="" loading="lazy" width="1200" height="675"></a><div class="agl-card-copy"><p class="agl-excerpt">${esc(post.intro)}</p><a class="agl-readmore" href="${post.url}">내용 보기 →</a></div></div></li>`;
 }
 
 fs.rmSync(publicDir, { recursive: true, force: true });
@@ -130,12 +150,29 @@ const missingSlugMap = new Map([
 const unpublishedTitles = new Set([...missingSlugMap.keys()]);
 const posts = parsePosts().filter((post) => !unpublishedTitles.has(post.title)).map((post, index) => {
   const slug = slugMap.get(post.title) || missingSlugMap.get(post.title) || slugify(post.title);
-  return { ...post, slug, url: `/${slug}/`, categoryName: categories[post.category], date: new Date(Date.UTC(2026, 5, 3 - index)).toISOString().slice(0, 10).replaceAll("-", ".") };
+  return { ...post, slug, url: `/${slug}/`, categoryName: categories[post.category], image: categoryImages[post.category] || defaultImage, date: new Date(Date.UTC(2026, 5, 3 - index)).toISOString().slice(0, 10).replaceAll("-", ".") };
 });
 
 for (const post of posts) {
-  const body = `<main class="agl-single" id="main"><article><p class="agl-kicker">${esc(post.categoryName)}</p><h1 class="agl-single-title">${esc(post.title)}</h1><div class="agl-single-meta"><span>${post.date}</span><span>애플가이드랩 편집부</span></div><div class="agl-single-image" data-label="${esc(post.categoryName)}"></div><section class="agl-summary-box"><h2>요약</h2><p>${esc(post.intro)}</p></section><div class="agl-article-content">${article(post)}</div></article></main>`;
-  writePage(post.slug, layout(`${post.title} - 애플가이드랩`, body, post.intro));
+  const body = `<main class="agl-single" id="main"><article><p class="agl-kicker">${esc(post.categoryName)}</p><h1 class="agl-single-title">${esc(post.title)}</h1><div class="agl-single-meta"><span>${post.date}</span><span>애플가이드랩 편집부</span></div><div class="agl-single-image" data-label="${esc(post.categoryName)}"><img src="${post.image}" alt="" width="1200" height="675"></div><section class="agl-summary-box"><h2>요약</h2><p>${esc(post.intro)}</p></section><div class="agl-article-content">${article(post)}</div></article></main>`;
+  writePage(post.slug, layout(`${post.title} - 애플가이드랩`, body, {
+    description: post.intro,
+    route: post.slug,
+    image: post.image,
+    type: "article",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: post.title,
+      description: post.intro,
+      image: `${siteUrl}${post.image}`,
+      datePublished: post.date.replaceAll(".", "-"),
+      dateModified: post.date.replaceAll(".", "-"),
+      author: { "@type": "Organization", name: "애플가이드랩 편집부" },
+      publisher: { "@type": "Organization", name: "애플가이드랩" },
+      mainEntityOfPage: absoluteUrl(post.slug),
+    },
+  }));
 }
 
 const topics = [
@@ -147,11 +184,25 @@ const topics = [
   ["뉴스해설", "/category/news-analysis/", "발표와 루머를 구매 판단에 필요한 맥락으로 다시 정리합니다."],
 ];
 let home = `<main class="agl-wrap" id="main"><section class="agl-hero"><p class="agl-kicker">APPLE GUIDE LAB</p><h1>Apple 기기와 일상을 연결하는 실전 가이드</h1><p>아이폰, 맥, 아이패드, 애플워치를 오래 잘 쓰기 위해 필요한 설정, 문제해결, 구매 판단, 제품 흐름을 한국어로 깊게 정리합니다.</p></section><section class="agl-section-label"><h2>최신 가이드</h2><a href="/category/news-analysis/">뉴스해설 보기</a></section><ul class="agl-post-list">${posts.slice(0, 10).map(postCard).join("")}</ul><section class="agl-section-label"><h2>주제별로 보기</h2></section><section class="agl-topic-grid" aria-label="주제별 카테고리">${topics.map(([name, url, text]) => `<article class="agl-topic-card"><a href="${url}">${name}</a><p>${text}</p></article>`).join("")}</section></main>`;
-writePage("", layout("애플가이드랩", home));
+writePage("", layout("애플가이드랩", home, {
+  route: "",
+  image: defaultImage,
+  jsonLd: {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "애플가이드랩",
+    url: siteUrl,
+    inLanguage: "ko-KR",
+  },
+}));
 
 for (const [slug, name] of Object.entries(categories)) {
   const body = `<main class="agl-wrap" id="main"><section class="agl-archive-head"><p class="agl-kicker">CATEGORY</p><h1>${esc(name)}</h1><p>${esc(categoryDescriptions[slug])}</p></section><ul class="agl-post-list">${posts.filter((post) => post.category === slug).map(postCard).join("")}</ul></main>`;
-  writePage(path.join("category", slug), layout(`${name} - 애플가이드랩`, body, categoryDescriptions[slug]));
+  writePage(path.join("category", slug), layout(`${name} - 애플가이드랩`, body, {
+    description: categoryDescriptions[slug],
+    route: `category/${slug}`,
+    image: categoryImages[slug] || defaultImage,
+  }));
 }
 
 const pages = [
@@ -160,16 +211,25 @@ const pages = [
   ["privacy-policy", "개인정보처리방침", "<h2>개인정보처리방침</h2><p>애플가이드랩은 문의 응대, 사이트 운영, 보안 및 통계 확인을 위해 필요한 최소한의 정보를 처리할 수 있습니다.</p><p>추후 Google AdSense 또는 Google Analytics를 연결하는 경우 쿠키와 광고 식별자가 사용될 수 있습니다.</p>"],
 ];
 for (const [slug, title, content] of pages) {
-  writePage(slug, layout(`${title} - 애플가이드랩`, `<main class="agl-single" id="main"><article><p class="agl-kicker">PAGE</p><h1 class="agl-single-title">${title}</h1><div class="agl-article-content">${stripWpBlocks(content)}</div></article></main>`));
+  writePage(slug, layout(`${title} - 애플가이드랩`, `<main class="agl-single" id="main"><article><p class="agl-kicker">PAGE</p><h1 class="agl-single-title">${title}</h1><div class="agl-article-content">${stripWpBlocks(content)}</div></article></main>`, {
+    route: slug,
+    image: defaultImage,
+  }));
 }
 
 const productNames = ["아이폰 충전기와 케이블", "맥세이프 보조배터리", "아이폰 케이스와 보호필름", "아이패드 키보드 케이스", "맥북 USB-C 허브", "애플워치 스트랩"];
 const products = `<main class="agl-wrap" id="main"><section class="agl-archive-head"><p class="agl-kicker">SHOPPING GUIDE</p><h1>상품구매하기</h1><p>애플 제품을 더 편하게 쓰는 데 도움이 되는 액세서리를 용도별로 정리했습니다.</p></section><section class="agl-topic-grid">${productNames.map((title) => `<article class="agl-topic-card"><a href="https://www.coupang.com/np/search?q=${encodeURIComponent(title)}">${title}</a><p>호환 모델, 발열, 내구성, 휴대성을 먼저 확인하고 고르는 편이 좋습니다.</p></article>`).join("")}</section></main>`;
-writePage("products", layout("상품구매하기 - 애플가이드랩", products));
+writePage("products", layout("상품구매하기 - 애플가이드랩", products, {
+  description: "애플 제품을 더 편하게 쓰는 데 도움이 되는 액세서리를 용도별로 정리했습니다.",
+  route: "products",
+  image: defaultImage,
+}));
 
 const routes = ["", ...posts.map((post) => post.slug), ...pages.map(([slug]) => slug), "products"];
 fs.writeFileSync(path.join(publicDir, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map((route) => `  <url><loc>${siteUrl}/${route ? `${route}/` : ""}</loc></url>`).join("\n")}\n</urlset>\n`);
 fs.writeFileSync(path.join(publicDir, "feed.xml"), `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>애플가이드랩</title><link>${siteUrl}/</link><description>애플 제품 실전 가이드</description>${posts.slice(0, 20).map((post) => `<item><title>${esc(post.title)}</title><link>${siteUrl}${post.url}</link><description>${esc(post.intro)}</description></item>`).join("")}</channel></rss>`);
-fs.writeFileSync(path.join(publicDir, "_headers"), "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n");
+fs.writeFileSync(path.join(publicDir, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
+fs.writeFileSync(path.join(publicDir, "_redirects"), "https://www.keepy.kr/* https://keepy.kr/:splat 301\n");
+fs.writeFileSync(path.join(publicDir, "_headers"), `/*\n  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()\n  Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'\n`);
 
 console.log(`Built ${posts.length} posts, ${Object.keys(categories).length} categories, 4 pages into ${publicDir}`);
