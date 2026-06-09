@@ -25,7 +25,15 @@ npx wrangler login
 npm run deploy -- --project-name keepy
 ```
 
-After deployment, connect `keepy.kr` and `www.keepy.kr` to the `keepy` Pages project in Cloudflare Pages custom domains.
+The project has also been prepared for GitHub Actions deployment. Add this GitHub repository secret before relying on automatic deployments:
+
+```text
+CLOUDFLARE_API_TOKEN
+```
+
+The token needs Cloudflare Pages write permission for account `d0a2b200822251923d253b84fa3eae3a`.
+
+After deployment, connect `keepy.kr` and `www.keepy.kr` to the `keepy` Pages project in Cloudflare Pages custom domains. Then update the `keepy.kr` nameservers at Gabia to the nameservers Cloudflare assigns for the zone.
 
 ## Notes
 
