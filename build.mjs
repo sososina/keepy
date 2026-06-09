@@ -230,6 +230,17 @@ fs.writeFileSync(path.join(publicDir, "sitemap.xml"), `<?xml version="1.0" encod
 fs.writeFileSync(path.join(publicDir, "feed.xml"), `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>애플가이드랩</title><link>${siteUrl}/</link><description>애플 제품 실전 가이드</description>${posts.slice(0, 20).map((post) => `<item><title>${esc(post.title)}</title><link>${siteUrl}${post.url}</link><description>${esc(post.intro)}</description></item>`).join("")}</channel></rss>`);
 fs.writeFileSync(path.join(publicDir, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
 fs.writeFileSync(path.join(publicDir, "_redirects"), "https://www.keepy.kr/* https://keepy.kr/:splat 301\n");
+fs.writeFileSync(path.join(publicDir, "_worker.js"), `export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    if (url.hostname === "www.keepy.kr") {
+      url.hostname = "keepy.kr";
+      return Response.redirect(url.toString(), 301);
+    }
+    return env.ASSETS.fetch(request);
+  },
+};
+`);
 fs.writeFileSync(path.join(publicDir, "_headers"), `/*\n  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()\n  Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'\n`);
 
 console.log(`Built ${posts.length} posts, ${Object.keys(categories).length} categories, 4 pages into ${publicDir}`);
